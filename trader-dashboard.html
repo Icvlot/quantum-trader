@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Investor Dashboard - Trading Enabled</title>
+<style>
+  /* (Same CSS as your style, omitted here for brevity) */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    color: #F1F5F9;
+    min-height: 100vh;
+  }
+  /* ... rest of your CSS styles ... */
+  .controls {
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    background: linear-gradient(90deg, #3B82F6, #2563EB);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.3s;
+  }
+  .btn:hover {
+    opacity: 0.9;
+  }
+  /* Additional styles for trading buttons */
+  .trade-btn {
+    margin-top: 10px;
+    background: linear-gradient(90deg, #10B981, #059669);
+  }
+</style>
+</head>
+<body>
+<div class="view-only-banner">
+  🔒 INVESTOR MODE - TRADING ENABLED
+</div>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>👁️ Investor Dashboard</h1>
+      <p style="color: #94A3B8; margin-top: 5px;">Real-time portfolio monitoring</p>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="refreshData()">🔄 Refresh</button>
+      <button class="btn export" onclick="exportReport()">📊 Export Report</button>
+      <button class="btn" onclick="showMLPredictions()">🤖 AI Predictions</button>
+      <button class="btn" onclick="goBack()">← Back</button>
+    </div>
+  </div>
+
+  <!-- Portfolio overview, market data, etc. (your existing layout) -->
+  <!-- ... (keep your existing grid and cards) ... -->
+
+  <!-- Add Trading Buttons -->
+  <div style="margin-top:20px; display:flex; justify-content:center; gap:15px;">
+    <button class="btn trade-btn" onclick="executeTrade('BUY')">Buy EURUSD</button>
+    <button class="btn trade-btn" onclick="executeTrade('SELL')">Sell EURUSD</button>
+  </div>
+
+</div>
+
+<script>
+  // Example data update functions (keep your existing update functions)
+  function refreshData() {
+    // Your existing refresh functions
+    alert('Data refreshed!');
+  }
+
+  function exportReport() {
+    alert('Report exported!');
+  }
+
+  function showMLPredictions() {
+    alert('AI Predictions:\nBuy EURUSD with 85% confidence...');
+  }
+
+  function goBack() {
+    window.location.href = 'index.html';
+  }
+
+  // Function to execute trade actions
+  function executeTrade(action) {
+    // Example: send a request to your server API
+    alert(action + ' action triggered for EURUSD');
+    // You can replace this with fetch() to your backend
+    /*
+    fetch('/api/trade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol: 'EURUSD', action: action, volume: 1 }) 
+    }).then(res => res.json())
+      .then(data => alert('Trade executed: ' + data.status));
+    */
+  }
+
+  // Keep your existing code for real-time updates, charts, etc.
+</script>
+</body>
+</html>
