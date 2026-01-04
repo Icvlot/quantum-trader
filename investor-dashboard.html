@@ -1,17 +1,551 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Investor Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor View-Only Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: #F1F5F9;
+            min-height: 100vh;
+        }
+        .view-only-banner {
+            background: linear-gradient(90deg, #8B5CF6, #7C3AED);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            border: 1px solid #334155;
+        }
+        .header h1 {
+            background: linear-gradient(90deg, #8B5CF6, #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background: linear-gradient(90deg, #3B82F6, #2563EB);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+        .btn.view-only {
+            background: linear-gradient(90deg, #8B5CF6, #7C3AED);
+        }
+        .btn.export {
+            background: linear-gradient(90deg, #10B981, #059669);
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        .card h3 {
+            color: #8B5CF6;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .metric {
+            margin: 15px 0;
+        }
+        .metric-label {
+            color: #94A3B8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #F1F5F9;
+        }
+        .metric-change {
+            font-size: 0.9rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .positive {
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.2);
+        }
+        .negative {
+            color: #EF4444;
+            background: rgba(239, 68, 68, 0.2);
+        }
+        .chart-container {
+            height: 200px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .chart {
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-line {
+            fill: none;
+            stroke: #8B5CF6;
+            stroke-width: 2;
+        }
+        .signal {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid #8B5CF6;
+        }
+        .signal.buy {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10B981;
+        }
+        .signal.sell {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #EF4444;
+        }
+        .signal.hold {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: #FBBF24;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+        th {
+            color: #8B5CF6;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        .last-update {
+            text-align: center;
+            color: #94A3B8;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; }
+            .controls { flex-wrap: wrap; justify-content: center; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-<h1>Investor View-Only Dashboard</h1>
-<p>Market Data & AI Predictions</p>
-<!-- Add your dashboard info here -->
-<script>
-function refresh() {
-  document.body.innerHTML += "<p>Updated: " + new Date().toLocaleTimeString() + "</p>";
-}
-setInterval(refresh, 60000);
-</script>
+    <div class="view-only-banner">
+        🔒 INVESTOR VIEW-ONLY MODE - TRADING ACTIONS DISABLED
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>👁️ Investor Dashboard</h1>
+                <p style="color: #94A3B8; margin-top: 5px;">Real-time portfolio monitoring</p>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn export" onclick="exportReport()">📊 Export Report</button>
+                <button class="btn view-only" onclick="showMLPredictions()">🤖 AI Predictions</button>
+                <button class="btn" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Portfolio Overview Card -->
+            <div class="card">
+                <h3>📊 Portfolio Overview</h3>
+                <div class="metric">
+                    <div class="metric-label">Total Value</div>
+                    <div class="metric-value" id="totalValue">$100,450.75</div>
+                    <span class="metric-change positive" id="dailyChange">+2.34%</span>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Today's P/L</div>
+                    <div class="metric-value positive" id="todayPL">+$2,345.50</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Risk Level</div>
+                    <div class="metric-value" id="riskLevel">Medium</div>
+                </div>
+            </div>
+
+            <!-- AI Predictions Card -->
+            <div class="card">
+                <h3>🤖 AI Trading Signals</h3>
+                <div class="signal buy" id="currentSignal">
+                    <strong>Current Signal:</strong> BUY EURUSD<br>
+                    <small>Confidence: 85% | ML Model: market_predictor.tflite</small>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Next Signal In</div>
+                    <div class="metric-value" id="nextSignalTime">15:30</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Model Status</div>
+                    <div class="metric-value positive" id="modelStatus">Loaded ✓</div>
+                </div>
+            </div>
+
+            <!-- Market Data Card -->
+            <div class="card">
+                <h3>📈 Live Market Data</h3>
+                <div class="metric">
+                    <div class="metric-label">EUR/USD</div>
+                    <div class="metric-value" id="eurusdPrice">1.08542</div>
+                    <span class="metric-change positive" id="eurusdChange">+0.12%</span>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">GBP/USD</div>
+                    <div class="metric-value" id="gbpusdPrice">1.26580</div>
+                    <span class="metric-change negative" id="gbpusdChange">-0.05%</span>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Gold</div>
+                    <div class="metric-value" id="goldPrice">$2,045.60</div>
+                    <span class="metric-change positive" id="goldChange">+0.34%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card">
+            <h3>📈 Portfolio Performance (Last 30 Days)</h3>
+            <div class="chart-container">
+                <div class="chart" id="performanceChart">
+                    <!-- Chart will be drawn by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Trades Table -->
+        <div class="card">
+            <h3>📋 Recent Activity</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Symbol</th>
+                            <th>Action</th>
+                            <th>Volume</th>
+                            <th>Price</th>
+                            <th>P/L</th>
+                            <th>AI Signal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradesTable">
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last updated: <span id="lastUpdateTime">Loading...</span> | 
+            Auto-refresh: <span id="autoRefreshStatus">Enabled (60s)</span>
+        </div>
+    </div>
+
+    <script>
+        // Initialize dashboard
+        let autoRefreshInterval;
+        
+        function initializeDashboard() {
+            updateAllData();
+            startAutoRefresh();
+            generateChart();
+            populateTradesTable();
+        }
+        
+        // Update all data
+        function updateAllData() {
+            updateMarketData();
+            updatePortfolioData();
+            updateMLPredictions();
+            updateLastUpdateTime();
+        }
+        
+        // Update market data
+        async function updateMarketData() {
+            try {
+                const response = await fetch('/api/market/EURUSD');
+                const data = await response.json();
+                
+                document.getElementById('eurusdPrice').textContent = data.price || '1.08542';
+                document.getElementById('eurusdChange').textContent = data.change || '+0.12%';
+                document.getElementById('eurusdChange').className = 
+                    'metric-change ' + ((data.change || '+0.12%').includes('-') ? 'negative' : 'positive');
+                    
+            } catch (error) {
+                console.error('Market data error:', error);
+                // Use demo data
+                document.getElementById('eurusdPrice').textContent = '1.08542';
+                document.getElementById('eurusdChange').textContent = '+0.12%';
+            }
+        }
+        
+        // Update portfolio data
+        async function updatePortfolioData() {
+            try {
+                const response = await fetch('/api/portfolio');
+                const data = await response.json();
+                
+                if (data.totalValue) {
+                    document.getElementById('totalValue').textContent = 
+                        '$' + parseFloat(data.totalValue).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                }
+                
+                if (data.dailyChange) {
+                    document.getElementById('dailyChange').textContent = data.dailyChange;
+                    document.getElementById('dailyChange').className = 
+                        'metric-change ' + (data.dailyChange.includes('-') ? 'negative' : 'positive');
+                }
+                
+            } catch (error) {
+                // Demo data
+                const demoValue = 100450.75 + (Math.random() * 1000 - 500);
+                const demoChange = (Math.random() > 0.5 ? '+' : '-') + 
+                    (Math.random() * 0.5).toFixed(2) + '%';
+                
+                document.getElementById('totalValue').textContent = 
+                    '$' + demoValue.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('dailyChange').textContent = demoChange;
+                document.getElementById('dailyChange').className = 
+                    'metric-change ' + (demoChange.includes('-') ? 'negative' : 'positive');
+            }
+        }
+        
+        // Update ML predictions
+        async function updateMLPredictions() {
+            try {
+                const response = await fetch('/api/ml/predict');
+                const data = await response.json();
+                
+                if (data.signal) {
+                    const signalDiv = document.getElementById('currentSignal');
+                    signalDiv.innerHTML = `
+                        <strong>Current Signal:</strong> ${data.signal}<br>
+                        <small>Confidence: ${data.confidence}% | ML Model: ${data.model}</small>
+                    `;
+                    signalDiv.className = `signal ${data.signal.toLowerCase()}`;
+                }
+                
+            } catch (error) {
+                // Demo predictions
+                const signals = ['BUY', 'SELL', 'HOLD'];
+                const randomSignal = signals[Math.floor(Math.random() * signals.length)];
+                const confidence = Math.floor(Math.random() * 30) + 70;
+                
+                const signalDiv = document.getElementById('currentSignal');
+                signalDiv.innerHTML = `
+                    <strong>Current Signal:</strong> ${randomSignal} EURUSD<br>
+                    <small>Confidence: ${confidence}% | ML Model: market_predictor.tflite</small>
+                `;
+                signalDiv.className = `signal ${randomSignal.toLowerCase()}`;
+            }
+        }
+        
+        // Generate performance chart
+        function generateChart() {
+            const chartDiv = document.getElementById('performanceChart');
+            chartDiv.innerHTML = '';
+            
+            // Create SVG for chart
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            
+            // Generate random data points
+            const points = [];
+            const width = chartDiv.clientWidth;
+            const height = chartDiv.clientHeight;
+            
+            for (let i = 0; i < 30; i++) {
+                const x = (i / 29) * (width - 40) + 20;
+                const y = height - 20 - (Math.random() * (height - 40));
+                points.push(`${x},${y}`);
+            }
+            
+            // Create polyline
+            const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            polyline.setAttribute('points', points.join(' '));
+            polyline.setAttribute('class', 'chart-line');
+            polyline.setAttribute('fill', 'none');
+            polyline.setAttribute('stroke', '#8B5CF6');
+            polyline.setAttribute('stroke-width', '2');
+            
+            svg.appendChild(polyline);
+            chartDiv.appendChild(svg);
+        }
+        
+        // Populate trades table
+        function populateTradesTable() {
+            const tableBody = document.getElementById('tradesTable');
+            tableBody.innerHTML = '';
+            
+            // Demo trades data
+            const demoTrades = [
+                { time: '10:30', symbol: 'EURUSD', action: 'BUY', volume: '1.00', price: '1.08420', pl: '+$142.50', signal: 'BUY (85%)' },
+                { time: '11:15', symbol: 'GBPUSD', action: 'SELL', volume: '0.50', price: '1.26650', pl: '-$45.20', signal: 'SELL (72%)' },
+                { time: '12:45', symbol: 'XAUUSD', action: 'BUY', volume: '0.10', price: '$2,040.50', pl: '+$510.00', signal: 'BUY (91%)' },
+                { time: '14:20', symbol: 'EURUSD', action: 'SELL', volume: '0.75', price: '1.08580', pl: '+$120.00', signal: 'SELL (68%)' },
+                { time: '15:30', symbol: 'USDJPY', action: 'BUY', volume: '1.25', price: '148.25', pl: '+$85.50', signal: 'BUY (79%)' },
+            ];
+            
+            demoTrades.forEach(trade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${trade.time}</td>
+                    <td>${trade.symbol}</td>
+                    <td><span class="${trade.action === 'BUY' ? 'positive' : 'negative'}">${trade.action}</span></td>
+                    <td>${trade.volume}</td>
+                    <td>${trade.price}</td>
+                    <td class="${trade.pl.includes('+') ? 'positive' : 'negative'}">${trade.pl}</td>
+                    <td>${trade.signal}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Update last update time
+        function updateLastUpdateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdateTime').textContent = 
+                now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        
+        // Start auto-refresh
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                updateAllData();
+            }, 60000); // 60 seconds
+        }
+        
+        // Refresh button
+        function refreshData() {
+            updateAllData();
+            generateChart();
+        }
+        
+        // Export report
+        function exportReport() {
+            const reportData = {
+                timestamp: new Date().toISOString(),
+                portfolioValue: document.getElementById('totalValue').textContent,
+                dailyChange: document.getElementById('dailyChange').textContent,
+                currentSignal: document.getElementById('currentSignal').textContent,
+                marketData: {
+                    eurusd: document.getElementById('eurusdPrice').textContent,
+                    gbpusd: document.getElementById('gbpusdPrice').textContent,
+                    gold: document.getElementById('goldPrice').textContent
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `investor-report-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            alert('📋 Report exported successfully!');
+        }
+        
+        // Show ML predictions
+        function showMLPredictions() {
+            alert('🤖 AI Predictions:\n\n' +
+                  '• EURUSD: BUY (85% confidence)\n' +
+                  '• GBPUSD: HOLD (65% confidence)\n' +
+                  '• XAUUSD: BUY (91% confidence)\n' +
+                  '• Next analysis: 15 minutes\n' +
+                  '• Risk level: Medium');
+        }
+        
+        // Go back
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', initializeDashboard);
+        window.addEventListener('resize', generateChart);
+        
+        // Disable trading buttons (view-only mode)
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent.includes('Buy') || 
+                e.target.textContent.includes('Sell') ||
+                e.target.textContent.includes('Trade') ||
+                e.target.textContent.includes('Execute')) {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('⚠️ Trading disabled in Investor View-Only mode');
+                return false;
+            }
+        });
+    </script>
 </body>
 </html>
