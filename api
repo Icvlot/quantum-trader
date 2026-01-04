@@ -1,1 +1,14 @@
-{"status":"ok","message":"Server connected"}
+{
+  "status": "success",
+  "server": "Quantum Trading Server",
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "endpoints": {
+    "test": "/api/test",
+    "market": "/api/market/:symbol",
+    "ml_models": "/api/ml/models",
+    "connect": "/api/connect",
+    "portfolio": "/api/portfolio"
+  },
+  "message": "Server is running correctly"
+}
