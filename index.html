@@ -1,15 +1,341 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>AI Trading Server</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Trading Server</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: #F1F5F9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            border: 1px solid #334155;
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #94A3B8;
+            font-size: 1.2rem;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #3B82F6;
+        }
+        .card h3 {
+            color: #3B82F6;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+            color: #CBD5E1;
+        }
+        .card li:last-child {
+            border-bottom: none;
+        }
+        .api-test {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid #334155;
+        }
+        .btn {
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: opacity 0.3s;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .status.success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ADE80;
+            border: 1px solid #4ADE80;
+        }
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #F87171;
+            border: 1px solid #F87171;
+        }
+        .status.loading {
+            background: rgba(251, 191, 36, 0.2);
+            color: #FBBF24;
+            border: 1px solid #FBBF24;
+        }
+        .dashboard-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .dashboard-link {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 10px;
+            text-decoration: none;
+            color: #F1F5F9;
+            border: 2px solid #334155;
+            transition: all 0.3s;
+        }
+        .dashboard-link:hover {
+            border-color: #3B82F6;
+            transform: scale(1.05);
+        }
+        .dashboard-link h4 {
+            color: #3B82F6;
+            margin-bottom: 10px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #94A3B8;
+            border-top: 1px solid #334155;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            h1 { font-size: 2rem; }
+            .cards { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-<h1>AI Trading Server is Running</h1>
-<p>Access your API at:</p>
-<h2 id="api-url"></h2>
+    <div class="container">
+        <header>
+            <h1>🚀 Quantum Trading Server</h1>
+            <p class="subtitle">Complete Web Hosting for MIT App Inventor Trading App</p>
+            <div class="dashboard-links">
+                <a href="investor-dashboard.html" class="dashboard-link">
+                    <h4>👁️ Investor Dashboard</h4>
+                    <p>View-only access</p>
+                </a>
+                <a href="trader-dashboard.html" class="dashboard-link">
+                    <h4>📈 Trader Dashboard</h4>
+                    <p>Full trading access</p>
+                </a>
+                <a href="admin-dashboard.html" class="dashboard-link">
+                    <h4>⚙️ Admin Dashboard</h4>
+                    <p>System management</p>
+                </a>
+            </div>
+        </header>
 
-<script>
-document.getElementById("api-url").textContent = window.location.href;
-</script>
+        <div class="cards">
+            <div class="card">
+                <h3>📊 API Endpoints</h3>
+                <ul>
+                    <li><strong>GET</strong> /api/test - Test server connection</li>
+                    <li><strong>GET</strong> /api/status - Server status</li>
+                    <li><strong>POST</strong> /api/connect - Connect to MT5</li>
+                    <li><strong>GET</strong> /api/market/:symbol - Market data</li>
+                    <li><strong>GET</strong> /api/ml/models - List ML models</li>
+                    <li><strong>GET</strong> /api/ml/download/:model - Download ML model</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>🤖 ML Models Available</h3>
+                <ul>
+                    <li>📈 market_predictor.tflite - Price prediction</li>
+                    <li>⚖️ risk_assessor.tflite - Risk assessment</li>
+                    <li>📊 signal_generator.tflite - Trade signals</li>
+                    <li>🔮 trend_analyzer.tflite - Trend analysis</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📱 MIT App Inventor Setup</h3>
+                <ul>
+                    <li>Use this URL in your app:</li>
+                    <li><code id="serverUrl">Loading...</code></li>
+                    <li>Post-install configuration required</li>
+                    <li>Supports view-only investor mode</li>
+                    <li>Real-time data updates</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="api-test">
+            <h3>🔧 API Connection Test</h3>
+            <p>Test if your server is responding correctly:</p>
+            
+            <button class="btn" onclick="testConnection()">Test API Connection</button>
+            <button class="btn" onclick="testMarketData()">Test Market Data</button>
+            <button class="btn" onclick="testMLModels()">Test ML Models</button>
+            
+            <div id="testResult" class="status"></div>
+            
+            <div style="margin-top: 20px;">
+                <h4>📋 Test Results:</h4>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Quantum Trading Server v1.0 | Hosted on GitHub Pages</p>
+            <p>For MIT App Inventor Integration | Post-install Setup Required</p>
+            <p id="currentTime"></p>
+        </footer>
+    </div>
+
+    <script>
+        // Get current server URL
+        document.getElementById('serverUrl').textContent = window.location.origin;
+        
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                `Server Time: ${now.toLocaleString()}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Test API Connection
+        async function testConnection() {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.className = 'status loading';
+            resultDiv.textContent = 'Testing connection...';
+            
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+                
+                resultDiv.className = 'status success';
+                resultDiv.innerHTML = `✅ Connection successful!<br>Server: ${data.server}<br>Status: ${data.status}`;
+                
+                addResult('API Connection', '✅ Success', data);
+            } catch (error) {
+                resultDiv.className = 'status error';
+                resultDiv.textContent = `❌ Connection failed: ${error.message}`;
+                addResult('API Connection', '❌ Failed', error.message);
+            }
+        }
+
+        // Test Market Data
+        async function testMarketData() {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.className = 'status loading';
+            resultDiv.textContent = 'Fetching market data...';
+            
+            try {
+                const response = await fetch('/api/market/EURUSD');
+                const data = await response.json();
+                
+                resultDiv.className = 'status success';
+                resultDiv.innerHTML = `✅ Market data received!<br>Symbol: ${data.symbol}<br>Price: $${data.price}`;
+                
+                addResult('Market Data', '✅ Success', data);
+            } catch (error) {
+                resultDiv.className = 'status error';
+                resultDiv.textContent = `❌ Market data failed: ${error.message}`;
+                addResult('Market Data', '❌ Failed', error.message);
+            }
+        }
+
+        // Test ML Models
+        async function testMLModels() {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.className = 'status loading';
+            resultDiv.textContent = 'Checking ML models...';
+            
+            try {
+                const response = await fetch('/api/ml/models');
+                const data = await response.json();
+                
+                resultDiv.className = 'status success';
+                resultDiv.innerHTML = `✅ ML models available!<br>Count: ${data.models.length}`;
+                
+                addResult('ML Models', '✅ Success', data);
+            } catch (error) {
+                resultDiv.className = 'status error';
+                resultDiv.textContent = `❌ ML models failed: ${error.message}`;
+                addResult('ML Models', '❌ Failed', error.message);
+            }
+        }
+
+        // Add result to container
+        function addResult(testName, status, data) {
+            const container = document.getElementById('resultsContainer');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'status ' + (status.includes('✅') ? 'success' : 'error');
+            resultDiv.innerHTML = `
+                <strong>${testName}</strong>: ${status}<br>
+                <small>${JSON.stringify(data, null, 2)}</small>
+            `;
+            container.prepend(resultDiv);
+            
+            // Keep only last 5 results
+            const results = container.querySelectorAll('.status');
+            if (results.length > 5) {
+                results[results.length - 1].remove();
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 1000);
+        });
+    </script>
 </body>
 </html>
