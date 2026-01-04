@@ -1,0 +1,5 @@
+This is a demo ML model file.
+In production, this would be a real .tflite file.
+Size: 2.4 MB
+Accuracy: 87%
+Purpose: Price prediction
